@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'sans-serif';
+        }
+
+        body {
+            overflow: hidden;
+            background: black;
+            margin: 0;
+        }
+
+        canvas {
+            background: blue;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: block;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .form-box {
+            position: relative;
+            width: 90%;
+            max-width: 400px;
+            height: auto;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            transform: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .form-box h2 {
+            color: rgb(255, 255, 255);
+            text-align: center;
+            font-size: 32px;
+        }
+
+        .form-box .input-box {
+            position: relative;
+            margin: 15px 0;
+            width: 100%;
+        }
+
+        .form-box .input-box input {
+            width: 100%;
+            height: 40px;
+            text-align: center;
+            background: transparent;
+            border-radius: 35px;
+            /* border-style: dashed; */
+            /* border: 2px solid rgb(56, 46, 46); */
+            outline: none;
+            padding: 0 10px;
+            color: #ffffff;
+            font-size: 16px;
+        }
+
+        ::placeholder {
+            color: #fff;
+            opacity: 70%;
+        }
+
+        .btn {
+            color: #000000;
+            background: rgb(255, 255, 255);
+            width: 100%;
+            height: 40px;
+            border-radius: 5px;
+            outline: black;
+            border: 2px solid black;
+            font-size: 17px;
+            cursor: pointer;
+            margin-top: 15px;
+            border-radius: 35px;
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Media Query for Responsive Design */
+        @media screen and (min-width: 768px) {
+            .form-box {
+                width: 60%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas1"></canvas>
+    <div class="container">
+        <div class="form-box">
+            <form action="backend.php" name="form-fill" method="post" onsubmit="return formValidation()">
+                <h2>Registration</h2>
+                <div class="input-box">
+                    <input type="text" name="username" placeholder="UserName" required>
+                </div>
+                <div class="input-box">
+                    <input type="text" name="department" placeholder="Department" required>
+                </div>
+                <div class="input-box">
+                    <input type="text" name="rollno" placeholder="Roll Number" required>
+                </div>
+                <div class="input-box">
+                    <input type="text" name="enrollment" placeholder="Enrollment ID" required>
+                </div>
+                <div class="input-box">
+                    <input type="email" name="email" placeholder="Email" required>
+                </div>
+                <div class="input-box">
+                    <input type="text" name="contactno" placeholder="Contact Number" required>
+                </div>
+                <div class="input-box">
+                    <input type="text" name="expertise" placeholder="Skill & Knowledge" required>
+                </div>
+                <div class="input-box">
+                    <input type="text" name="reason" class="reason" placeholder="Reason for joining us..." optional>
+                </div>
+                <div class="button">
+                    <input type="submit" class="btn" name="register">
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- <script src="script.js"></script> -->
+    <script>
+        const canvas = document.getElementById('canvas1');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let gradient = ctx.createRadialGradient(
+            canvas.width / 2, canvas.height / 2, 100,
+            canvas.width / 2, canvas.height / 2, canvas.width / 2
+        );
+        gradient.addColorStop(0, 'red');
+        gradient.addColorStop(0.6, 'cyan');
+        gradient.addColorStop(1, 'magenta');
+
+        class Symbol {
+            constructor(x, y, fontSize, canvasHeight) {
+                this.characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+                this.x = x;
+                this.y = y;
+                this.fontSize = fontSize;
+                this.text = '';
+                this.canvasHeight = canvasHeight;
+            }
+            draw(context) {
+                this.text = this.characters.charAt(Math.floor(Math.random() * this.characters.length));
+                context.fillText(this.text, this.x * this.fontSize, this.y * this.fontSize);
+                if (this.y * this.fontSize > this.canvasHeight && Math.random() > 0.98) {
+                    this.y = 0;
+                } else {
+                    this.y += 1;
+                }
+            }
+        }
+
+        class Effect {
+            constructor(canvasWidth, canvasHeight) {
+                this.canvasWidth = canvasWidth;
+                this.canvasHeight = canvasHeight;
+                this.fontSize = 15;
+                this.columns = this.canvasWidth / this.fontSize;
+                this.symbols = [];
+                this.initialize();
+                console.log(this.symbols);
+            }
+            initialize() {
+                for (let i = 0; i < this.columns; i++) {
+                    this.symbols[i] = new Symbol(i, 0, this.fontSize, this.canvasHeight);
+                }
+            }
+
+            resize(width, height) {
+                this.canvasWidth = width;
+                this.canvasHeight = height;
+                this.fontSize = 15;
+                this.columns = this.canvasWidth / this.fontSize;
+                this.symbols = [];
+                this.initialize();
+            }
+        }
+
+        const effect = new Effect(canvas.width, canvas.height);
+        let lastTime = 0;
+        const fps = 35;
+        const nextFrame = 1000 / fps;
+        let timer = 0;
+
+        function animate(timeStamp) {
+            const deltaTime = timeStamp - lastTime;
+            lastTime = timeStamp;
+            if (timer > nextFrame) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.textAlign = 'center';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = gradient;
+                ctx.font = effect.fontSize + 'px monospace';
+                effect.symbols.forEach(symbol => symbol.draw(ctx));
+                timer = 0;
+            } else {
+                timer += deltaTime;
+            }
+
+            requestAnimationFrame(animate);
+        }
+        animate(0);
+
+        window.addEventListener('resize', function () {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            effect.resize(canvas.width, canvas.height);
+            gradient = ctx.createRadialGradient(
+                canvas.width / 2, canvas.height / 2, 100,
+                canvas.width / 2, canvas.height / 2, canvas.width / 2
+            );
+            gradient.addColorStop(0, 'red');
+            gradient.addColorStop(0.6, 'cyan');
+            gradient.addColorStop(1, 'magenta');
+        });
+
+        function formValidation() {
+            if (document.form - fill.username.value == "") {
+                document.getElementById("result").innerHTML = "Fill UserName*";
+                return false;
+            }
+            else if (document.form - fill.department.value == "") {
+                document.getElementById("result").innerHTML = "Fill Department EX : CSE";
+                return false;
+            }
+            else if (document.form - fill.rollno.value == "") {
+                document.getElementById("result").innerHTML = "Fill Roll Number EX : 001";
+                return false;
+            }
+            else if (document.form - fill.enrollment.value == "") {
+                document.getElementById("result").innerHTML = "Fill Enrollment ID EX : 12345678901";
+                return false;
+            }
+            else if (document.form - fill.email.value == "") {
+                document.getElementById("result").innerHTML = "Fill Email";
+                return false;
+            }
+            else if (document.form - fill.contactno.value == "") {
+                document.getElementById("result").innerHTML = "Fill Contact Number";
+                return false;
+            }
+            else if (document.form - fill.expertise.value == "") {
+                document.getElementById("result").innerHTML = "Fill Skill & Knowledge";
+                return false;
+            }
+        }
+    </script>
+</body>
+
+</html>

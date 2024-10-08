@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registration Form</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", sans-serif;
+      }
+
+      body {
+        overflow: hidden;
+        background: black;
+        margin: 0;
+      }
+
+      canvas {
+        background: rgb(0, 0, 0);
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: block;
+      }
+
+      .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .form-box {
+        position: relative;
+        width: 90%;
+        max-width: 400px;
+        height: auto;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-radius: 20px;
+        transform: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+
+      .form-box h2 {
+        color: rgb(255, 255, 255);
+        text-align: center;
+        font-size: 32px;
+      }
+
+      .form-box .input-box {
+        position: relative;
+        margin: 15px 0;
+        width: 100%;
+      }
+
+      .form-box .input-box input {
+        width: 100%;
+        height: 40px;
+        text-align: center;
+        background: transparent;
+        border-radius: 35px;
+        /* border-style: dashed; */
+        /* border: 2px solid rgb(56, 46, 46); */
+        outline: none;
+        padding: 0 10px;
+        color: #ffffff;
+        font-size: 16px;
+      }
+
+      ::placeholder {
+        color: #fff;
+        opacity: 70%;
+      }
+
+      .btn {
+        color: #000000;
+        background: rgb(255, 255, 255);
+        width: 100%;
+        height: 40px;
+        border-radius: 5px;
+        outline: black;
+        border: 2px solid black;
+        font-size: 17px;
+        cursor: pointer;
+        margin-top: 15px;
+        border-radius: 35px;
+        box-shadow: 3px 0 10px rgba(0, 0, 0, 0.5);
+      }
+
+      /* Media Query for Responsive Design */
+      @media screen and (min-width: 768px) {
+        .form-box {
+          width: 60%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <canvas id="canvas1"></canvas>
+    <div class="container">
+      <div class="form-box">
+        <form
+          action="backend.php"
+          name="form-fill"
+          method="post"
+          onsubmit="return formValidation()"
+        >
+          <h2>Registration</h2>
+          <div class="input-box">
+            <input
+              type="text"
+              name="username"
+              placeholder="UserName"
+              required
+            />
+          </div>
+          <div class="input-box">
+            <input
+              type="text"
+              name="department"
+              placeholder="Department"
+              required
+            />
+          </div>
+          <div class="input-box">
+            <input
+              type="text"
+              name="rollno"
+              placeholder="Roll Number"
+              required
+            />
+          </div>
+          <div class="input-box">
+            <input
+              type="text"
+              name="enrollment"
+              placeholder="Enrollment ID"
+              required
+            />
+          </div>
+          <div class="input-box">
+            <input type="email" name="email" placeholder="Email" required />
+          </div>
+          <div class="input-box">
+            <input
+              type="text"
+              name="contactno"
+              placeholder="Contact Number"
+              required
+            />
+          </div>
+          <div class="input-box">
+            <input
+              type="text"
+              name="expertise"
+              placeholder="Skill & Knowledge"
+              required
+            />
+          </div>
+          <div class="input-box">
+            <input
+              type="text"
+              name="reason"
+              class="reason"
+              placeholder="Reason for joining us..."
+              optional
+            />
+          </div>
+          <div class="button">
+            <input type="submit" class="btn" name="register" />
+          </div>
+        </form>
+      </div>
+    </div>
+    <script>
+      const canvas = document.getElementById("canvas1");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      class Particle {
+        constructor(x, y, size) {
+          this.x = x;
+          this.y = y;
+          this.size = size;
+          this.speedX = Math.random() * 3 - 1.5;
+          this.speedY = Math.random() * 3 - 1.5;
+        }
+
+        update() {
+          this.x += this.speedX;
+          this.y += this.speedY;
+
+          if (this.size > 0.2) this.size -= 0.1;
+        }
+
+        draw() {
+          ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        }
+      }
+
+      let particles = [];
+
+      function createParticles(x, y) {
+        const particleCount = 5;
+        for (let i = 0; i < particleCount; i++) {
+          particles.push(new Particle(x, y, Math.random() * 5 + 2));
+        }
+      }
+
+      function animateParticles() {
+        for (let i = 0; i < particles.length; i++) {
+          particles[i].update();
+          particles[i].draw();
+
+          if (particles[i].size <= 0.2) {
+            particles.splice(i, 1);
+            i--;
+          }
+        }
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = 0; i < particles.length; i++) {
+          particles[i].update();
+          particles[i].draw();
+
+          if (particles[i].size <= 0.2) {
+            particles.splice(i, 1);
+            i--;
+          }
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      function handleMouseMove(event) {
+        const x = event.x;
+        const y = event.y;
+        createParticles(x, y);
+      }
+
+      function handleResize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+
+      // Attach event listeners
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("resize", handleResize);
+
+      // Initial setup
+      handleResize();
+      animate();
+
+      function formValidation() {
+        if (document.form - fill.username.value == "") {
+          document.getElementById("result").innerHTML = "Fill UserName*";
+          return false;
+        } else if (document.form - fill.department.value == "") {
+          document.getElementById("result").innerHTML =
+            "Fill Department EX : CSE";
+          return false;
+        } else if (document.form - fill.rollno.value == "") {
+          document.getElementById("result").innerHTML =
+            "Fill Roll Number EX : 001";
+          return false;
+        } else if (document.form - fill.enrollment.value == "") {
+          document.getElementById("result").innerHTML =
+            "Fill Enrollment ID EX : 12345678901";
+          return false;
+        } else if (document.form - fill.email.value == "") {
+          document.getElementById("result").innerHTML = "Fill Email";
+          return false;
+        } else if (document.form - fill.contactno.value == "") {
+          document.getElementById("result").innerHTML = "Fill Contact Number";
+          return false;
+        } else if (document.form - fill.expertise.value == "") {
+          document.getElementById("result").innerHTML =
+            "Fill Skill & Knowledge";
+          return false;
+        }
+      }
+    </script>
+  </body>
+</html>
